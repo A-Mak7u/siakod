@@ -1,0 +1,138 @@
+﻿using System;
+using System.IO;
+
+public class TreeNode
+{
+    public int Value;
+    public TreeNode Left;
+    public TreeNode Right;
+
+    public TreeNode(int value)
+    {
+        Value = value;
+        Left = null;
+        Right = null;
+    }
+}
+
+public class BinarySearchTree
+{
+    private TreeNode root;
+
+    public BinarySearchTree()
+    {
+        root = null;
+    }
+
+
+    public void Insert(int value)
+    {
+        root = InsertRecursive(root, value);
+    }
+
+
+    private TreeNode InsertRecursive(TreeNode current, int value)
+    {
+        if (current == null)
+        {
+            return new TreeNode(value);
+        }
+
+        if (value < current.Value)
+        {
+            current.Left = InsertRecursive(current.Left, value);
+        }
+        else
+        {
+            current.Right = InsertRecursive(current.Right, value);
+        }
+
+        return current;
+    }
+
+
+    public TreeNode Find(int value)
+    {
+        return FindRecursive(root, value);
+    }
+
+
+    private TreeNode FindRecursive(TreeNode current, int value)
+    {
+        if (current == null || current.Value == value)
+        {
+            return current;
+        }
+
+        if (value < current.Value)
+        {
+            return FindRecursive(current.Left, value);
+        }
+        else
+        {
+            return FindRecursive(current.Right, value);
+        }
+    }
+
+    // вычисление глубины заданного узла
+    public int Depth(int value)
+    {
+        TreeNode node = Find(value);    // надо найти узел по значению
+
+        if (node == null)
+        {
+            return -1;
+        }
+
+        return DepthRecursive(root, node, 1);
+    }
+
+
+    private int DepthRecursive(TreeNode current, TreeNode node, int depth)
+    {
+        if (current == null)
+        {
+            return 0;
+        }
+
+        if (current == node)
+        {
+            return depth;   // если текущий узел совпадает с заданным, возвращаем текущую глубину
+        }
+
+        // рекурсивно ищем глубину в левом и правом поддеревьях, увеличивая глубину на 1
+        int leftDepth = DepthRecursive(current.Left, node, depth + 1);
+        if (leftDepth != 0)
+            return leftDepth;
+        return DepthRecursive(current.Right, node, depth + 1);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+
+        string[] lines = File.ReadAllLines("input2.txt");
+        int[] numbers = Array.ConvertAll(lines, int.Parse);
+
+
+        BinarySearchTree bst = new BinarySearchTree();
+        foreach (int number in numbers)
+        {
+            bst.Insert(number);
+        }
+
+        // узел для поиска глубины
+        int targetValue = 15;
+
+
+        int depth = bst.Depth(targetValue);
+
+
+        using (StreamWriter writer = new StreamWriter("output.txt"))
+        {
+            writer.WriteLine($"Глубина узла со значением {targetValue}: {depth-1}");
+        }
+    }
+}

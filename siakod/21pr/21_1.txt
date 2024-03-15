@@ -1,0 +1,110 @@
+﻿using System;
+using System.IO;
+
+// узел бинарного дерева
+public class TreeNode
+{
+    public int Value;
+    public TreeNode Left;
+    public TreeNode Right;
+
+    // конструктор для узла дерева
+    public TreeNode(int value)
+    {
+        Value = value;
+        Left = null;
+        Right = null;
+    }
+}
+
+
+public class BinarySearchTree
+{
+    private TreeNode root;
+
+    // конструктор для бинарного дерева поиска
+    public BinarySearchTree()
+    {
+        root = null;
+    }
+
+    // метод для вставки нового узла в дерево
+    public void Insert(int value)
+    {
+        root = InsertRecursive(root, value);
+    }
+
+
+    private TreeNode InsertRecursive(TreeNode current, int value)
+    {
+        if (current == null)
+        {
+            return new TreeNode(value);    // если текущий узел null, создаем новый узел
+        }
+
+        if (value < current.Value)
+        {
+            current.Left = InsertRecursive(current.Left, value);  // вставляем в левое поддерево
+        }
+        else
+        {
+            current.Right = InsertRecursive(current.Right, value); // вставляем в правое поддерево
+        }
+
+        return current;
+    }
+
+
+    public int SumOfOddValues()
+    {
+        return SumOfOddValuesRecursive(root);
+    }
+
+    // вычисление суммы нечетных значений узлов дерева
+    private int SumOfOddValuesRecursive(TreeNode node)
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+
+        int sum = 0;
+
+        if (node.Value % 2 != 0)
+        {
+            sum += node.Value;
+        }
+
+
+        sum += SumOfOddValuesRecursive(node.Left);
+        sum += SumOfOddValuesRecursive(node.Right);
+
+        return sum;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+
+        string[] lines = File.ReadAllLines("input1.txt");
+        int[] numbers = Array.ConvertAll(lines, int.Parse);
+
+
+        BinarySearchTree bst = new BinarySearchTree();
+        foreach (int number in numbers)
+        {
+            bst.Insert(number);
+        }
+
+
+        int sumOfOddValues = bst.SumOfOddValues();
+
+
+        using (StreamWriter writer = new StreamWriter("output.txt"))
+        {
+            writer.WriteLine("Сумма нечетных значений узлов дерева: " + sumOfOddValues);
+        }
+    }
+}
